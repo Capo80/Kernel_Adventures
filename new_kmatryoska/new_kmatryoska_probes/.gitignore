@@ -1,0 +1,2 @@
+load_on_qemu.sh
+qemu_kernel.gdb

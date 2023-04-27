@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "stdarg.h": "c",
+        "smart_api_finder.h": "c",
+        "sched.h": "c"
+    }
+}

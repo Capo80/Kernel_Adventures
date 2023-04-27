@@ -1,0 +1,62 @@
+prossima scadenza: 
+  - data accettazione lotto precedente: dato via libera, ma non sappiamo che data riportata
+  - si ipotizza settimana scorsa / dal 10 luglio
+
+L'area A (rispetto a milestone precedente):
+  - studio di qualche elemento in più rispetto lo scenario elettromagnetico, il link-budget con quale opera il test bed tirato su e quali margini ha rispetto a variazioni di scenario (aumento distanzi, aumento potenze, jammer)
+  - iniziare da un modello teorico (?) e raffinamento con delle misure su campo
+  - attesi: livelli di sensibilità con cui operano gli strumenti, margine di rapporto segnale/rumore minimi
+  - aggiornare il documeto di progetto per indicare più duplexers
+  - provare a fare operare lo UE con un framework e la base station con un'altro ? (test)
+
+L'area A (milestone successiva):
+  - prima release della piattaforma di radio assessment:
+    - fare un documento iniziale di specifica che descrive l'insieme di componenti
+    - piattaforma portatile:
+      - jammer
+      - imsi-catcher (PoC)
+      - due componenti hardware SDR
+      
+  - migliorie per la stabilità dei BD210
+    - ubuntu kernel real-time
+    - mettete le cpu in governor al massimo
+    - lanciare progrmamin con nice -20
+    - togliere ogni GUI
+    - mettere un controllo al livello di stdout per farli ricariare automaticamente l'FPGA alla BD205/BD210 anche se è già attaccata all'USB.
+
+L'area B (milestone successiva):
+  - norme di collaudo prima fase veniva simulato web server
+  - provare un test del genere di un endpoint IP, su un'interfaccia esterna rispetto alla core network
+  
+Milestone 4 ():
+ - Analisi tecniche di sicurezza per trovare vulnerabilità:
+   - SCASS
+   - TLS
+   - Tool per analizzare traffico Down-link (decoder ASN.1 è compliant con specifiche di 3GPP) + Eventuale integrazione wireshark
+   - task 2.3: funzioni di monitoraggio e analisi del traffico 5G e della rete core.
+   - analizzare traffio reti core 5G
+
+Milestone 5 ():
+
+-----------------------------------------------------------------------
+
+  - FUB/FUE:
+    - pacman già consegnato:
+       - comprendere perché falliscono con malware meterpreter e windows defender
+       - tecniche di hooking:
+          - whisper2shout funziona solo su 64 bit, attività di porting a 32 bit.
+       - limitazioni meterpreter e cobalt strike nella versione staged.
+       - tenativo di utilizzare pacman con un reverse shell TCP fatta con msvenom su una macchina windows target con windows defender veniva beccatto.
+       - eseguibile non partiva anche se bypassava l'antivirus.
+
+Milestone 4:
+ - nuova versione pacman
+ - serve una caratterizzazione più completa del comportamento verso diverse versioni windows per ambienti server.
+ - target mobile/target desktop, ancora non si sa bene su cosa.
+ - release future di qualche proposta di modalità di inoculazione da remoto.
+
+ Scadenza per fub/fue Milestone 3:
+    - Assessment di tecniche di evasione
+    - Manca automazione dei vari processi.
+
+Date occhio ad open project a Giorgio.

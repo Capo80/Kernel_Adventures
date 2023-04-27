@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "typeinfo": "c",
+        "page_table_utils.h": "c"
+    }
+}

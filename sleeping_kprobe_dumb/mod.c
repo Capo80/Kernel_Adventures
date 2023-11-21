@@ -27,7 +27,7 @@ void __exit test_exit(void) {
 
 	remove_probes();
 
-    ssleep(1);
+    ssleep(10);
 
 	pr_info("module exit\n");
 

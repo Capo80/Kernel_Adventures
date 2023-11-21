@@ -8,35 +8,25 @@ struct test_ret
 	unsigned long test;
 };
 
-DEFINE_PER_CPU(unsigned long, test);
+#define UDELAY 300
 
 int test_handler(struct kprobe *ri, struct pt_regs *regs)
 {	
-	//printk("kprobe: %lx\n", (unsigned long) ri);
-	unsigned long* temp = (unsigned long) &test;
-	while (temp > 0) {
-		temp -= 1; 
-		//printk("kprobe: %lx\n", (unsigned long) temp);
-		//printk("value: %lx - %lx\n", (unsigned long) temp, __this_cpu_read(*temp));
-		if ((unsigned long) __this_cpu_read(*temp) == (unsigned long) ri) {
-			//printk("value: %lx - %lx\n", (unsigned long) temp, __this_cpu_read(*temp));
-			break;
-		}
+
+	int ret;
+
+	ret = kprobe_sleep_header(ri);
+	if (ret < 0) {
+		return 0; //we failed - cant sleep
 	}
 
-	if (temp == 0) {
-		pr_err("failed to find per_cpu kprobe variable\n");
-		return 0;
+	if (!in_atomic()) {	//we could still be in a non-preemptibable situation
+		usleep_range(UDELAY-10, UDELAY+10);
 	}
 
-	printk("nmissed: %lu\n", ri->nmissed);
+	//printk("nmissed: %lu\n", ri->nmissed);
 
-	__this_cpu_write(*temp, NULL);
-	preempt_enable();
-	msleep(100);
-	preempt_disable();
-	__this_cpu_write(*temp, ri);
-
+	ret = kprobe_sleep_footer(ri); // dont know how to recover if we fail here
 	return 0;
 	
 }
@@ -44,35 +34,18 @@ NOKPROBE_SYMBOL(test_handler);
 
 int test_ret_handler(struct kretprobe_instance *ri, struct pt_regs *regs)
 {	
-	
-	//struct addr_info *addr_info = (struct addr_info *)ri->data;
+	int ret;
 
-	//printk("kprobe: %lx\n", (unsigned long) ri);
-	// unsigned long* temp = (unsigned long) &test;
-	
-	// while (temp > 0) {
-	// 	temp -= 1; 
-	// 	//printk("kprobe: %lx\n", (unsigned long) temp);
-	// 	//printk("value: %lx - %lx\n", (unsigned long) temp, __this_cpu_read(*temp));
-	// 	if ((unsigned long) __this_cpu_read(*temp) == (unsigned long) &ri->rph->rp->kp) {
-	// 		//printk("value: %lx - %lx\n", (unsigned long) temp, __this_cpu_read(*temp));
-	// 		break;
-	// 	}
-	// }
+	ret = kretprobe_sleep_header(ri);
+	if (ret < 0) {
+		return 0; //we failed - cant sleep
+	}
 
-	// //printk("value: %lx - %lx - %lx\n", (unsigned long) &ri->rph->rp->kp, (unsigned long) temp, __this_cpu_read(*temp));
-	// if (temp == 0) {
-	// 	pr_err("failed to find per_cpu kprobe variable\n");
-	// 	return 0;
-	// }
+	if (!in_atomic()) {	//we could still be in a non-preemptibable situation
+		usleep_range(UDELAY-10, UDELAY+10);
+	}
 
-	// printk("nmissed: %lu\n", ri->rph->rp->kp.nmissed);
-	
-	// __this_cpu_write(*temp, NULL);
-	// preempt_enable();
-	// msleep(100);
-	// preempt_disable();
-	// __this_cpu_write(*temp, ri);
+	ret = kretprobe_sleep_footer(ri); // dont know how to recover if we fail here
 	return 0;
 
 }
@@ -80,32 +53,19 @@ NOKPROBE_SYMBOL(test_ret_handler);
 
 int test_ret_ret_handler(struct kretprobe_instance *ri, struct pt_regs *regs)
 {	
-	//struct addr_info *addr_info = (struct addr_info *)ri->data;
-	unsigned long* temp = (unsigned long) &test;
-	
-	while (temp > 0) {
-		temp -= 1; 
-		//printk("kprobe: %lx\n", (unsigned long) temp);
-		//printk("value: %lx - %lx\n", (unsigned long) temp, __this_cpu_read(*temp));
-		if ((unsigned long) __this_cpu_read(*temp) == (unsigned long) &ri->rph->rp->kp) {
-			//printk("value: %lx - %lx\n", (unsigned long) temp, __this_cpu_read(*temp));
-			break;
-		}
+
+	int ret;
+
+	ret = kretprobe_sleep_header(ri);
+	if (ret < 0) {
+		return 0; //we failed - cant sleep
 	}
 
-	//printk("value: %lx - %lx - %lx\n", (unsigned long) &ri->rph->rp->kp, (unsigned long) temp, __this_cpu_read(*temp));
-	if (temp == 0) {
-		pr_err("failed to find per_cpu kprobe variable\n");
-		return 0;
+	if (!in_atomic()) {	//we could still be in a non-preemptibable situation
+		usleep_range(UDELAY-10, UDELAY+10);
 	}
 
-	printk("nmissed: %lu\n", ri->rph->rp->kp.nmissed);
-	
-	__this_cpu_write(*temp, NULL);
-	preempt_enable();
-	msleep(100);
-	preempt_disable();
-	__this_cpu_write(*temp, ri);
+	ret = kretprobe_sleep_footer(ri); // dont know how to recover if we fail here
 	return 0;
 
 }
@@ -119,7 +79,11 @@ struct kretprobe vaultfs_kretprobes[] = {
 		/* Probe up to 20 instances concurrently. */
 		.maxactive		= 20,
 		.kp = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0)
 			.symbol_name = "close_fd"
+#else
+			.symbol_name = "__close_fd"
+#endif
 		}
 	},
 };
@@ -127,7 +91,11 @@ struct kretprobe vaultfs_kretprobes[] = {
 struct kprobe vaultfs_kprobes[] = {
 	{
 		.pre_handler	= test_handler,
-		.symbol_name 	= "close_fd" 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0)
+		.symbol_name = "close_fd"
+#else
+		.symbol_name = "__close_fd"
+#endif
 	}
 };
 

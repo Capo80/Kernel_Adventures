@@ -1,5 +1,5 @@
-#ifndef KPROBES_H
-#define KPROBES_H
+#ifndef SLEEP_KPROBES_H
+#define SLEEP_KPROBES_H
 
 #include <linux/fs.h>
 #include <linux/kernel.h>
@@ -21,11 +21,9 @@
 #include <linux/hashtable.h>
 #include <linux/percpu.h>
 
-#include "sleeping_kprobes.h"
-
-int test_handler(struct kprobe *ri, struct pt_regs *regs);
-
-int init_kprobes(void);
-void remove_probes(void);
+int kprobe_sleep_header(struct kprobe *ri);
+int kprobe_sleep_footer(struct kprobe *ri);
+int kretprobe_sleep_header(struct kretprobe_instance *ri);
+int kretprobe_sleep_footer(struct kretprobe_instance *ri);
 
 #endif

@@ -2,11 +2,21 @@
 
 ## Kprobe handler (kprobe_int3_handler)
 
+this get called on a INT3 kprobe
+
+```
+https://elixir.bootlin.com/linux/latest/source/arch/x86/kernel/kprobes/core.c#L958
+```
+
 ### case STANDARD
 
 set_current_probe:
 - save kprobe struct to cpu;
 - save (0 & interrupt enabled flags) to kcb->old_flags and kcb->saved_flags;
+
+```
+https://elixir.bootlin.com/linux/latest/source/arch/x86/kernel/kprobes/core.c#L815
+```
 
 save KPROBE_HIT_ACTIVE to kcb->status;
 
@@ -71,3 +81,13 @@ other cases:
         - do single_step, same as before
 - HIT_REENTER: (we hit a probe while handling a probe while handling a probe):
     - we fucked up -> KERNEL PANIC
+
+
+## Kprobe ftrace handler (kprobe_ftrace_handler)
+
+This is the one that gets called on a CALL kprobe
+```
+https://elixir.bootlin.com/linux/latest/source/arch/x86/kernel/kprobes/ftrace.c#L16
+```
+
+works pretty much the same as on top, even sumpler actually, less states for the kprobe and less need to emulate.

@@ -66,11 +66,15 @@ int kprobe_sleep_header(struct kprobe *ri) {
  */
 int kprobe_sleep_footer(struct kprobe *ri) {
 
-    // this should be NULL if it is we die
+    // this can be null if we landed on a different cpu not yet searched
     unsigned long* kprobe_cpu = __this_cpu_read(current_kprobe_cpu_addr);
     if (kprobe_cpu == NULL) {
-        pr_err("FATAL! footer with NULL structure");
-        return -1;
+        kprobe_cpu = find_cpu_var((unsigned long) ri);
+        if (kprobe_cpu == NULL) {
+            pr_err("FATAL! Cannot find cpu var");
+            return -1;
+        }
+        __this_cpu_write(current_kprobe_cpu_addr, kprobe_cpu); // save after the search
     }
 	preempt_disable();
 	__this_cpu_write(*kprobe_cpu, ri);
@@ -123,11 +127,22 @@ int kretprobe_sleep_header(struct kretprobe_instance *ri) {
  */
 int kretprobe_sleep_footer(struct kretprobe_instance *ri) {
     
-    // this should be NULL if it is we fail
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0)
+	struct kretprobe *rp = ri->rph->rp;
+#else
+	struct kretprobe *rp = ri->rp;
+#endif
+
+    // this can be null if we landed on a different cpu not yet searched
     unsigned long* kprobe_cpu = __this_cpu_read(current_kprobe_cpu_addr);
     if (kprobe_cpu == NULL) {
-        pr_err("FATAL! footer with NULL structure");
-        return -1;
+        pr_info("SEARCHING...");
+        kprobe_cpu = find_cpu_var((unsigned long) &rp->kp);
+        if (kprobe_cpu == NULL) {
+            pr_err("FATAL! Cannot find cpu var");
+            return -1;
+        }
+        __this_cpu_write(current_kprobe_cpu_addr, kprobe_cpu); // save after the search
     }
 	preempt_disable();
 	__this_cpu_write(*kprobe_cpu, ri);

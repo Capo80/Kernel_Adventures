@@ -95,6 +95,10 @@ Checkout correct kernel version (can check name with "git tag"):
 git checkout tags/Ubuntu-6.8.0-31.31
 ```
 
+Alternative, clone directly the desired branch:
+```bash
+git clone --depth 1 --branch Ubuntu-5.15.0-35.36+22.10.1 git://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/noble
+```
 Generate config file
 ```bash
 chmod a+x debian/rules

@@ -1,1 +1,0 @@
-savedcmd_/mnt/shared/Kernel_Adventures/shmem_fault_check/hook.o := ld -m elf_x86_64 -z noexecstack --no-warn-rwx-segments   -r -o /mnt/shared/Kernel_Adventures/shmem_fault_check/hook.o @/mnt/shared/Kernel_Adventures/shmem_fault_check/hook.mod 

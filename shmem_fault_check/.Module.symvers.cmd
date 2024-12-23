@@ -1,1 +1,0 @@
-savedcmd_/mnt/shared/Kernel_Adventures/shmem_fault_check/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /mnt/shared/Kernel_Adventures/shmem_fault_check/Module.symvers -T /mnt/shared/Kernel_Adventures/shmem_fault_check/modules.order -i Module.symvers -e 

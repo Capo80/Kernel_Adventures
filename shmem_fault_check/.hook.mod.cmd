@@ -1,0 +1,1 @@
+savedcmd_/mnt/shared/Kernel_Adventures/shmem_fault_check/hook.mod := printf '%s\n'   mod.o libs/kprobes_helper.o | awk '!x[$$0]++ { print("/mnt/shared/Kernel_Adventures/shmem_fault_check/"$$0) }' > /mnt/shared/Kernel_Adventures/shmem_fault_check/hook.mod
